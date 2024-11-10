@@ -25,6 +25,13 @@ namespace hw_sdk_mock
         ResponseCode takeOff();
         ResponseCode land();
         ResponseCode goHome();
+
+        /*
+        * @brief Go to a specified location
+        * @param latitude Latitude in degrees (-90 to 90)
+        * @param longitude Longitude in degrees (-180 to 180)
+        * @param altitude Altitude in meters (0 to 10000)
+        */
         ResponseCode goTo(double latitude, double longitude, double altitude);
     };
 } // namespace hw_sdk_mock
