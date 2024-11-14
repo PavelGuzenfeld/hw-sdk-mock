@@ -26,7 +26,7 @@ namespace hw_sdk_mock
         ResponseCode arm(double altitude);
         ResponseCode disarm();
         ResponseCode takeOff();
-        ResponseCode land();
+        void land();
         ResponseCode goHome();
 
         /*
