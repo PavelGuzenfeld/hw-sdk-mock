@@ -19,13 +19,14 @@ namespace hw_sdk_mock
         FlightController &operator=(const FlightController &) = delete;
         FlightController(FlightController &&) = default;
         FlightController &operator=(FlightController &&) = default;
-        /*
-        * @brief Arm the drone
-        * @param altitude Altitude in meters (0 to 10000)
-        */
-        ResponseCode arm(double altitude);
+
+        ResponseCode arm();
         ResponseCode disarm();
-        ResponseCode takeOff();
+        /*
+         * @brief TakeOff the drone
+         * @param altitude Altitude in meters (0 to 10000)
+         */
+        ResponseCode takeOff(double altitude);
         void land();
         ResponseCode goHome();
 
