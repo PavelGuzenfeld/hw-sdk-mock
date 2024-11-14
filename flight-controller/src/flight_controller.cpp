@@ -41,7 +41,7 @@ namespace hw_sdk_mock
         }
     }
 
-    FlightController::ResponseCode FlightController::arm(double /*altitude*/)
+    FlightController::ResponseCode FlightController::arm()
     {
         ResponseCode response = getRandomResponse();
         printResult("ARM", response);
@@ -55,7 +55,7 @@ namespace hw_sdk_mock
         return response;
     }
 
-    FlightController::ResponseCode FlightController::takeOff()
+    FlightController::ResponseCode FlightController::takeOff(double /*altitude*/)
     {
         ResponseCode response = getRandomResponse();
         printResult("TAKEOFF", response);

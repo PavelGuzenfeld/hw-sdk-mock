@@ -4,9 +4,12 @@
 int main()
 {
     hw_sdk_mock::FlightController fc;
+    fc.arm();
     auto const hight = 10.0;
-    fc.arm(hight);
+    fc.takeOff(hight);
+    fc.goTo(10.0, 10.0, hight);
+    fc.land();
     fc.disarm();
-    fc.takeOff();
+
     return 0;
 }
