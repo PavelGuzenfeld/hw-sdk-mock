@@ -62,11 +62,9 @@ namespace hw_sdk_mock
         return response;
     }
 
-    FlightController::ResponseCode FlightController::land()
+    void FlightController::land()
     {
-        ResponseCode response = getRandomResponse();
-        printResult("LAND", response);
-        return response;
+        std::cout << "Executing LAND\n";
     }
 
     FlightController::ResponseCode FlightController::goHome()
