@@ -1,5 +1,7 @@
 #include "link/link.hpp"
-#include <iostream>
+
+#include <fmt/format.h>
+
 int main()
 {
     hw_sdk_mock::Link link;
@@ -7,8 +9,7 @@ int main()
     for (int i = 0; i < 5; ++i)
     {
         auto quality = link.getSignalQuality();
-
-        std::cout << "Signal Quality: " << static_cast<int>(quality) << "\n";
+        fmt::print("Signal Quality: {}\n", static_cast<int>(quality));
     }
 
     return 0;

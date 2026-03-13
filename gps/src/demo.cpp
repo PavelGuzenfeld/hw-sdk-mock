@@ -1,5 +1,6 @@
 #include "gps/gps.hpp"
-#include <iostream>
+
+#include <fmt/format.h>
 
 int main()
 {
@@ -10,8 +11,16 @@ int main()
         auto location = gps.getLocation();
         auto quality = gps.getSignalQuality();
 
-        std::cout << "Location: " << location.latitude << ", " << location.longitude << ", " << location.altitude << " meters\n";
-        std::cout << "Signal Quality: " << static_cast<int>(quality) << "\n";
+        if (location)
+        {
+            fmt::print("Location: {:.6f}, {:.6f}, {:.6f} meters\n",
+                       location->latitude, location->longitude, location->altitude);
+        }
+        else
+        {
+            fmt::print("Location: unavailable\n");
+        }
+        fmt::print("Signal Quality: {}\n", static_cast<int>(quality));
     }
 
     return 0;

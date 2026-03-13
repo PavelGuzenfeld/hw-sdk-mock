@@ -1,56 +1,34 @@
-cmake_minimum_required(VERSION 3.8)
-file(READ "${CMAKE_CURRENT_SOURCE_DIR}/../VERSION" PROJECT_VERSION)
-string(STRIP "${PROJECT_VERSION}" PROJECT_VERSION)
-project(link VERSION ${PROJECT_VERSION})
+cmake_minimum_required(VERSION 3.14)
 
-# Set C++ standard (keeping it on the bleeding edge with C++23)
-set(CMAKE_CXX_STANDARD 23)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
+if(NOT CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
+    # Built as subdirectory — inherit settings from parent
+else()
+    file(READ "${CMAKE_CURRENT_SOURCE_DIR}/../VERSION" PROJECT_VERSION)
+    string(STRIP "${PROJECT_VERSION}" PROJECT_VERSION)
+    project(link VERSION ${PROJECT_VERSION})
+    set(CMAKE_CXX_STANDARD 23)
+    set(CMAKE_CXX_STANDARD_REQUIRED ON)
+    include(FetchContent)
+    FetchContent_Declare(fmt GIT_REPOSITORY https://github.com/fmtlib/fmt.git GIT_TAG 11.1.4 GIT_SHALLOW TRUE)
+    FetchContent_MakeAvailable(fmt)
+endif()
 
-# Add strict compile options to catch all your mistakes
 add_compile_options(-Wformat -Wall -Wextra -pedantic -Werror -Wconversion -Wshadow -Wunreachable-code -Wunused -Wunused-function)
 
-# Include directories for headers
-include_directories(include)
+set(SOURCE_FILES src/link.cpp)
 
-# Add source files
-set(SOURCE_FILES
-    src/${PROJECT_NAME}.cpp
-)
-
-# Define the shared library target named after the project
-add_library(${PROJECT_NAME} SHARED ${SOURCE_FILES})
-
-# Specify where the headers are (using the actual library target name)
-target_include_directories(${PROJECT_NAME}
+add_library(link SHARED ${SOURCE_FILES})
+target_include_directories(link
     PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
         $<INSTALL_INTERFACE:include>
 )
+target_link_libraries(link PUBLIC fmt::fmt)
 
-# Add an executable for testing the library
-add_executable(${PROJECT_NAME}_demo src/demo.cpp)
-target_link_libraries(${PROJECT_NAME}_demo ${PROJECT_NAME})
+add_executable(link_demo src/demo.cpp)
+target_link_libraries(link_demo link)
 
-# Install the library with the project name as target
-install(TARGETS ${PROJECT_NAME}
-    EXPORT ${PROJECT_NAME}
-    LIBRARY DESTINATION lib
-    ARCHIVE DESTINATION lib
-    RUNTIME DESTINATION bin
-    INCLUDES DESTINATION include
-)
-
-# Set up an export for find_package functionality
-install(EXPORT ${PROJECT_NAME}
-    FILE ${PROJECT_NAME}Config.cmake
-    DESTINATION lib/cmake/${PROJECT_NAME}
-)
-
-# Install the headers
+install(TARGETS link EXPORT link LIBRARY DESTINATION lib ARCHIVE DESTINATION lib RUNTIME DESTINATION bin INCLUDES DESTINATION include)
+install(EXPORT link FILE linkConfig.cmake DESTINATION lib/cmake/link)
 install(DIRECTORY include/ DESTINATION include)
-
-# Install the demo executable
-install(TARGETS ${PROJECT_NAME}_demo
-    RUNTIME DESTINATION bin
-)
+install(TARGETS link_demo RUNTIME DESTINATION bin)

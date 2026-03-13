@@ -1,42 +1,36 @@
 # HW SDK Mock Library
 
-Mock interface for GPS, Link, and Flight Controller systems with randomized responses to simulate hardware SDK behavior.
+Mock interface for GPS, Link, and Flight Controller systems with realistic randomized behavior to simulate hardware SDK responses.
 
 ## Prerequisites
 
-- **CMake** 3.8+
+- **CMake** 3.14+
 - **C++ compiler** supporting C++23
+- **fmt** (fetched automatically via CMake FetchContent)
 
 ## Build
 
 ```bash
 git clone https://github.com/PavelGuzenfeld/hw-sdk-mock
 cd hw-sdk-mock
-```
-
-Each module (gps, link, flight-controller) is built independently:
-
-```bash
-cd <module>
-cmake -B build
-cmake --build build
-sudo cmake --install build
+cmake -B build -DCMAKE_BUILD_TYPE=Release
+cmake --build build --parallel
 ```
 
 ## Run
 
-Each module includes a demo executable:
-
 ```bash
-./build/gps_demo
-./build/link_demo
-./build/flight_controller_demo
+./build/gps/gps_demo
+./build/link/link_demo
+./build/flight-controller/flight-controller_demo
 ```
 
 ## Structure
 
 ```
 hw-sdk-mock/
+├── CMakeLists.txt              # Top-level build (fetches fmt)
+├── VERSION                     # Single source of truth for versioning
 ├── gps/
 │   ├── include/gps/gps.hpp
 │   ├── src/gps.cpp

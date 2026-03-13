@@ -1,14 +1,15 @@
 #include "link/link.hpp"
-#include <iostream>
+
 #include <random>
-#include <string>
+#include <string_view>
+
+#include <fmt/format.h>
 
 namespace hw_sdk_mock
 {
 
     namespace
     {
-        // Helper to generate random SignalQuality values
         Link::SignalQuality getRandomSignalQuality()
         {
             static std::random_device rd;
@@ -17,8 +18,7 @@ namespace hw_sdk_mock
             return static_cast<Link::SignalQuality>(dis(gen));
         }
 
-        // Converts SignalQuality enum to a readable string
-        std::string signalQualityToString(Link::SignalQuality quality)
+        std::string_view signalQualityToString(Link::SignalQuality quality)
         {
             switch (quality)
             {
@@ -41,7 +41,7 @@ namespace hw_sdk_mock
     Link::SignalQuality Link::getSignalQuality()
     {
         SignalQuality quality = getRandomSignalQuality();
-        std::cout << "Link Signal Quality: " << signalQualityToString(quality) << "\n";
+        fmt::print("Link Signal Quality: {}\n", signalQualityToString(quality));
         return quality;
     }
 
