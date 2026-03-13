@@ -27,7 +27,7 @@ namespace hw_sdk_mock
          * @param altitude Altitude in meters (0 to 10000)
          */
         ResponseCode takeOff(double altitude);
-        void land();
+        ResponseCode land();
         ResponseCode goHome();
 
         /*

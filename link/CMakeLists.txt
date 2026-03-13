@@ -11,7 +11,7 @@ add_compile_options(-Wformat -Wall -Wextra -pedantic -Werror -Wconversion -Wshad
 # Include directories for headers
 include_directories(include)
 
-# Add source files for the FlightController
+# Add source files
 set(SOURCE_FILES
     src/${PROJECT_NAME}.cpp
 )
