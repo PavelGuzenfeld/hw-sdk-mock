@@ -1,0 +1,27 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        module: [gps, link, flight-controller]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build ${{ matrix.module }}
+        run: |
+          cd ${{ matrix.module }}
+          cmake -B build -DCMAKE_BUILD_TYPE=Release
+          cmake --build build --parallel
+
+      - name: Run ${{ matrix.module }} demo
+        run: |
+          cd ${{ matrix.module }}
+          ./build/${{ matrix.module == 'flight-controller' && 'flight_controller' || matrix.module }}_demo
