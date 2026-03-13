@@ -19,9 +19,9 @@ set(SOURCE_FILES
 )
 
 # Define the shared library target named after the project
-add_library(flight-controller SHARED ${SOURCE_FILES})
+add_library(${PROJECT_NAME} SHARED ${SOURCE_FILES})
 
-# Specify where the headers are (using the actual library target name)
+# Specify where the headers are
 target_include_directories(${PROJECT_NAME}
     PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
@@ -29,10 +29,10 @@ target_include_directories(${PROJECT_NAME}
 )
 
 # Add an executable for testing the library
-add_executable(flight_controller_demo src/demo.cpp)
-target_link_libraries(flight_controller_demo flight-controller)
+add_executable(${PROJECT_NAME}_demo src/demo.cpp)
+target_link_libraries(${PROJECT_NAME}_demo ${PROJECT_NAME})
 
-# Install the library with the project name as target
+# Install the library
 install(TARGETS ${PROJECT_NAME}
     EXPORT ${PROJECT_NAME}
     LIBRARY DESTINATION lib
@@ -43,14 +43,14 @@ install(TARGETS ${PROJECT_NAME}
 
 # Set up an export for find_package functionality
 install(EXPORT ${PROJECT_NAME}
-    FILE flight-controllerConfig.cmake
-    DESTINATION lib/cmake/flight-controller
+    FILE ${PROJECT_NAME}Config.cmake
+    DESTINATION lib/cmake/${PROJECT_NAME}
 )
 
 # Install the headers
 install(DIRECTORY include/ DESTINATION include)
 
 # Install the demo executable
-install(TARGETS flight_controller_demo
+install(TARGETS ${PROJECT_NAME}_demo
     RUNTIME DESTINATION bin
 )

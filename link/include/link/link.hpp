@@ -12,7 +12,6 @@ namespace hw_sdk_mock
             FAIR,
             GOOD,
             EXCELLENT
-
         };
 
         Link() = default;

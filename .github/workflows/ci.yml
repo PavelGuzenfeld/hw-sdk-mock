@@ -24,4 +24,4 @@ jobs:
       - name: Run ${{ matrix.module }} demo
         run: |
           cd ${{ matrix.module }}
-          ./build/${{ matrix.module == 'flight-controller' && 'flight_controller' || matrix.module }}_demo
+          ./build/${{ matrix.module }}_demo

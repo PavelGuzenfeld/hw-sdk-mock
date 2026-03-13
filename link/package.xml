@@ -4,7 +4,7 @@
   <name>link</name>
   <version>0.0.1</version>
   <description>Mock Link hardware SDK for testing</description>
-  <maintainer email="TODO">pavel</maintainer>
+  <maintainer email="TODO">Pavel Guzenfeld</maintainer>
   <license>MIT</license>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
