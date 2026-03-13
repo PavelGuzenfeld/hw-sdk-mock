@@ -9,19 +9,16 @@ on:
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        module: [gps, link, flight-controller]
     steps:
       - uses: actions/checkout@v4
 
-      - name: Build ${{ matrix.module }}
+      - name: Build all modules
         run: |
-          cd ${{ matrix.module }}
           cmake -B build -DCMAKE_BUILD_TYPE=Release
           cmake --build build --parallel
 
-      - name: Run ${{ matrix.module }} demo
+      - name: Run demos
         run: |
-          cd ${{ matrix.module }}
-          ./build/${{ matrix.module }}_demo
+          ./build/gps/gps_demo
+          ./build/link/link_demo
+          ./build/flight-controller/flight-controller_demo

@@ -1,23 +1,33 @@
 #include "flight-controller/flight_controller.hpp"
-#include <iostream>
+
 #include <random>
-#include <string>
+#include <string_view>
+
+#include <fmt/format.h>
 
 namespace hw_sdk_mock
 {
     namespace
     {
-        // Helper to generate random response codes
-        FlightController::ResponseCode getRandomResponse()
+        // ~5% chance of hardware/connection failure
+        bool randomFailure()
         {
             static std::random_device rd;
             static std::mt19937 gen(rd());
-            static std::uniform_int_distribution<int> dis(0, 3);
-            return static_cast<FlightController::ResponseCode>(dis(gen));
+            static std::uniform_int_distribution<int> dis(1, 20);
+            return dis(gen) == 1;
         }
 
-        // Function to convert ResponseCode to readable strings
-        std::string responseCodeToString(FlightController::ResponseCode code)
+        FlightController::ResponseCode randomHwError()
+        {
+            static std::random_device rd;
+            static std::mt19937 gen(rd());
+            static std::uniform_int_distribution<int> dis(0, 1);
+            return dis(gen) == 0 ? FlightController::ResponseCode::CONNECTION_ERROR
+                                 : FlightController::ResponseCode::HARDWARE_ERROR;
+        }
+
+        std::string_view responseCodeToString(FlightController::ResponseCode code)
         {
             switch (code)
             {
@@ -34,54 +44,161 @@ namespace hw_sdk_mock
             }
         }
 
-        // Print the result
-        void printResult(const std::string &command, FlightController::ResponseCode response)
+        std::string_view stateToString(FlightController::State state)
         {
-            std::cout << "Executing " << command << ": " << responseCodeToString(response) << "\n";
+            switch (state)
+            {
+            case FlightController::State::DISARMED:
+                return "DISARMED";
+            case FlightController::State::ARMED:
+                return "ARMED";
+            case FlightController::State::AIRBORNE:
+                return "AIRBORNE";
+            default:
+                return "UNKNOWN_STATE";
+            }
+        }
+
+        void printResult(std::string_view command, FlightController::ResponseCode response,
+                         FlightController::State state)
+        {
+            fmt::print("Executing {}: {} [state: {}]\n", command, responseCodeToString(response),
+                       stateToString(state));
         }
     }
 
     FlightController::ResponseCode FlightController::arm()
     {
-        ResponseCode response = getRandomResponse();
-        printResult("ARM", response);
-        return response;
+        if (state_ != State::DISARMED)
+        {
+            printResult("ARM", ResponseCode::INVALID_COMMAND, state_);
+            return ResponseCode::INVALID_COMMAND;
+        }
+        if (randomFailure())
+        {
+            auto err = randomHwError();
+            printResult("ARM", err, state_);
+            return err;
+        }
+        state_ = State::ARMED;
+        printResult("ARM", ResponseCode::SUCCESS, state_);
+        return ResponseCode::SUCCESS;
     }
 
     FlightController::ResponseCode FlightController::disarm()
     {
-        ResponseCode response = getRandomResponse();
-        printResult("DISARM", response);
-        return response;
+        if (state_ == State::DISARMED)
+        {
+            printResult("DISARM", ResponseCode::INVALID_COMMAND, state_);
+            return ResponseCode::INVALID_COMMAND;
+        }
+        if (state_ == State::AIRBORNE)
+        {
+            printResult("DISARM", ResponseCode::INVALID_COMMAND, state_);
+            return ResponseCode::INVALID_COMMAND;
+        }
+        if (randomFailure())
+        {
+            auto err = randomHwError();
+            printResult("DISARM", err, state_);
+            return err;
+        }
+        state_ = State::DISARMED;
+        printResult("DISARM", ResponseCode::SUCCESS, state_);
+        return ResponseCode::SUCCESS;
     }
 
-    FlightController::ResponseCode FlightController::takeOff(double /*altitude*/)
+    FlightController::ResponseCode FlightController::takeOff(double altitude)
     {
-        ResponseCode response = getRandomResponse();
-        printResult("TAKEOFF", response);
-        return response;
+        if (state_ != State::ARMED)
+        {
+            printResult("TAKEOFF", ResponseCode::INVALID_COMMAND, state_);
+            return ResponseCode::INVALID_COMMAND;
+        }
+        if (altitude <= 0.0 || altitude > 10000.0)
+        {
+            printResult("TAKEOFF", ResponseCode::INVALID_COMMAND, state_);
+            return ResponseCode::INVALID_COMMAND;
+        }
+        if (randomFailure())
+        {
+            auto err = randomHwError();
+            printResult("TAKEOFF", err, state_);
+            return err;
+        }
+        state_ = State::AIRBORNE;
+        fmt::print("Executing TAKEOFF (alt: {}): SUCCESS [state: {}]\n",
+                   altitude, stateToString(state_));
+        return ResponseCode::SUCCESS;
     }
 
     FlightController::ResponseCode FlightController::land()
     {
-        ResponseCode response = getRandomResponse();
-        printResult("LAND", response);
-        return response;
+        if (state_ != State::AIRBORNE)
+        {
+            printResult("LAND", ResponseCode::INVALID_COMMAND, state_);
+            return ResponseCode::INVALID_COMMAND;
+        }
+        if (randomFailure())
+        {
+            auto err = randomHwError();
+            printResult("LAND", err, state_);
+            return err;
+        }
+        state_ = State::ARMED;
+        printResult("LAND", ResponseCode::SUCCESS, state_);
+        return ResponseCode::SUCCESS;
     }
 
     FlightController::ResponseCode FlightController::goHome()
     {
-        ResponseCode response = getRandomResponse();
-        printResult("GO_HOME", response);
-        return response;
+        if (state_ != State::AIRBORNE)
+        {
+            printResult("GO_HOME", ResponseCode::INVALID_COMMAND, state_);
+            return ResponseCode::INVALID_COMMAND;
+        }
+        if (randomFailure())
+        {
+            auto err = randomHwError();
+            printResult("GO_HOME", err, state_);
+            return err;
+        }
+        state_ = State::ARMED;
+        printResult("GO_HOME", ResponseCode::SUCCESS, state_);
+        return ResponseCode::SUCCESS;
     }
 
     FlightController::ResponseCode FlightController::goTo(double latitude, double longitude, double altitude)
     {
-        ResponseCode response = getRandomResponse();
-        std::cout << "Executing GOTO (lat: " << latitude << ", lon: " << longitude << ", alt: " << altitude << "): "
-                  << responseCodeToString(response) << "\n";
-        return response;
+        if (state_ != State::AIRBORNE)
+        {
+            fmt::print("Executing GOTO (lat: {}, lon: {}, alt: {}): INVALID_COMMAND [state: {}]\n",
+                       latitude, longitude, altitude, stateToString(state_));
+            return ResponseCode::INVALID_COMMAND;
+        }
+        if (latitude < -90.0 || latitude > 90.0 ||
+            longitude < -180.0 || longitude > 180.0 ||
+            altitude <= 0.0 || altitude > 10000.0)
+        {
+            fmt::print("Executing GOTO (lat: {}, lon: {}, alt: {}): INVALID_COMMAND [state: {}]\n",
+                       latitude, longitude, altitude, stateToString(state_));
+            return ResponseCode::INVALID_COMMAND;
+        }
+        if (randomFailure())
+        {
+            auto err = randomHwError();
+            fmt::print("Executing GOTO (lat: {}, lon: {}, alt: {}): {} [state: {}]\n",
+                       latitude, longitude, altitude, responseCodeToString(err), stateToString(state_));
+            return err;
+        }
+        fmt::print("Executing GOTO (lat: {}, lon: {}, alt: {}): SUCCESS [state: {}]\n",
+                   latitude, longitude, altitude, stateToString(state_));
+        return ResponseCode::SUCCESS;
+    }
+
+    FlightController::State FlightController::getState() const
+    {
+        return state_;
     }
 
 } // namespace hw_sdk_mock
