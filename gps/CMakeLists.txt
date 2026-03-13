@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 3.8)
-project(gps)
+file(READ "${CMAKE_CURRENT_SOURCE_DIR}/../VERSION" PROJECT_VERSION)
+string(STRIP "${PROJECT_VERSION}" PROJECT_VERSION)
+project(gps VERSION ${PROJECT_VERSION})
 
 # Set C++ standard (keeping it on the bleeding edge with C++23)
 set(CMAKE_CXX_STANDARD 23)
