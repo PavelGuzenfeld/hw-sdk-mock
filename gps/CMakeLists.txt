@@ -32,3 +32,9 @@ install(TARGETS gps EXPORT gps LIBRARY DESTINATION lib ARCHIVE DESTINATION lib R
 install(EXPORT gps FILE gpsConfig.cmake DESTINATION lib/cmake/gps)
 install(DIRECTORY include/ DESTINATION include)
 install(TARGETS gps_demo RUNTIME DESTINATION bin)
+
+if(TARGET doctest_with_main)
+    add_executable(gps_test test/test_gps.cpp)
+    target_link_libraries(gps_test gps doctest_with_main)
+    add_test(NAME gps_test COMMAND gps_test)
+endif()

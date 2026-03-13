@@ -32,3 +32,9 @@ install(TARGETS flight-controller EXPORT flight-controller LIBRARY DESTINATION l
 install(EXPORT flight-controller FILE flight-controllerConfig.cmake DESTINATION lib/cmake/flight-controller)
 install(DIRECTORY include/ DESTINATION include)
 install(TARGETS flight-controller_demo RUNTIME DESTINATION bin)
+
+if(TARGET doctest_with_main)
+    add_executable(flight-controller_test test/test_flight_controller.cpp)
+    target_link_libraries(flight-controller_test flight-controller doctest_with_main)
+    add_test(NAME flight-controller_test COMMAND flight-controller_test)
+endif()

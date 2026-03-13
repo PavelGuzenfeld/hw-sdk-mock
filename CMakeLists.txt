@@ -15,7 +15,15 @@ FetchContent_Declare(
     GIT_TAG        11.1.4
     GIT_SHALLOW    TRUE
 )
-FetchContent_MakeAvailable(fmt)
+FetchContent_Declare(
+    doctest
+    GIT_REPOSITORY https://github.com/doctest/doctest.git
+    GIT_TAG        v2.4.11
+    GIT_SHALLOW    TRUE
+)
+FetchContent_MakeAvailable(fmt doctest)
+
+enable_testing()
 
 add_subdirectory(gps)
 add_subdirectory(link)
