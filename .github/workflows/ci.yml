@@ -17,6 +17,9 @@ jobs:
           cmake -B build -DCMAKE_BUILD_TYPE=Release
           cmake --build build --parallel
 
+      - name: Run tests
+        run: ctest --test-dir build --output-on-failure
+
       - name: Run demos
         run: |
           ./build/gps/gps_demo

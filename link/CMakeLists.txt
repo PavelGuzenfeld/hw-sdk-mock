@@ -32,3 +32,9 @@ install(TARGETS link EXPORT link LIBRARY DESTINATION lib ARCHIVE DESTINATION lib
 install(EXPORT link FILE linkConfig.cmake DESTINATION lib/cmake/link)
 install(DIRECTORY include/ DESTINATION include)
 install(TARGETS link_demo RUNTIME DESTINATION bin)
+
+if(TARGET doctest_with_main)
+    add_executable(link_test test/test_link.cpp)
+    target_link_libraries(link_test link doctest_with_main)
+    add_test(NAME link_test COMMAND link_test)
+endif()
